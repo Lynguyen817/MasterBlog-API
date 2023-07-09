@@ -20,27 +20,8 @@
         "content": "This is the fourth post."
     },
     {
-        "title": "ge",
-        "content": "reww"
-    },
-    {
+        "id": 5,
         "title": "ly",
-        "content": "home"
-    },
-    {
-        "title": "kil",
-        "content": "guh"
-    },
-    {
-        "title": "lili",
-        "content": "hoa"
-    },
-    {
-        "title": "five",
-        "content": "somethings"
-    },
-    {
-        "title": "six",
-        "content": "phone"
+        "content": "some things"
     }
 ]

@@ -29,8 +29,11 @@ def add():
     # If missing title and content, raise an error
     if title == "" or content == "":
         return jsonify({'error': 'Title and content are required'}), 400
+    # Generate a unique identifier for the new post
+    new_post_id = len(blog_posts) + 1
     # Create a new blog post dictionary
     new_post = {
+        'id': new_post_id,
         'title': title,
         'content': content
     }
@@ -42,7 +45,7 @@ def add():
     return redirect(url_for('index'))
 
 
-@app.route('/api/posts/<post_id>', methods=['DELETE'])
+@app.route('/api/posts/<int:post_id>', methods=['GET', 'POST'])
 def delete(post_id):
     """ Find the blog post with the given id and remove it from the list"""
     with open("posts.json", "r") as fileobj:
@@ -50,12 +53,13 @@ def delete(post_id):
     for post in posts:
         if post['id'] == post_id:
             posts.remove(post)
-        if not post_id:
-            return jsonify({'error': '400 Not Found'})
-    with open('posts.json', 'w') as newfile:
-        json.dump(posts, newfile, indent=4)
-
-    return jsonify({"message": "Post with id <id> has been deleted successfully."}), 201
+        if not id:
+            return jsonify({'error': 'Post Not Found'}), 404
+        with open('posts.json', 'w') as newfile:
+            json.dump(posts, newfile, indent=4)
+        # Redirect back to the home page
+        return redirect(url_for('index'))
+    return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 201
 
 
 @app.route('/api/posts/<id>', methods=['PUT'])
