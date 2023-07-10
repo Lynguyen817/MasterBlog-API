@@ -45,24 +45,25 @@ def add():
     return redirect(url_for('index'))
 
 
-@app.route('/api/posts/<int:post_id>', methods=['GET', 'POST'])
+@app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete(post_id):
     """ Find the blog post with the given id and remove it from the list"""
     with open("posts.json", "r") as fileobj:
-        posts = json.load(fileobj)
-    for post in posts:
+        blog_posts = json.load(fileobj)
+    # Delete post by its id
+    for post in blog_posts:
         if post['id'] == post_id:
-            posts.remove(post)
-        if not id:
+            blog_posts.remove(post)
+        # If no post with given id, return an error response
+        if not post_id:
             return jsonify({'error': 'Post Not Found'}), 404
-        with open('posts.json', 'w') as newfile:
-            json.dump(posts, newfile, indent=4)
-        # Redirect back to the home page
-        return redirect(url_for('index'))
+    # Save data to a newfile
+    with open('posts.json', 'w') as newfile:
+        json.dump(blog_posts, newfile, indent=4)
     return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 201
 
 
-@app.route('/api/posts/<id>', methods=['PUT'])
+@app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def update(post_id):
     """
         Fetch the blog posts from the JSON file.
@@ -70,21 +71,30 @@ def update(post_id):
     """
     try:
         with open("job_posts.json", "r") as fileobj:
-            blog_posts = json.load(fileobj)
+            posts = json.load(fileobj)
     except FileNotFoundError:
         return "File not found", 404
 
-    for post in blog_posts:
-        # Update the post in the JSON file
-        post['id'] = request.form['id']
-        post['title'] = request.form['title']
-        post['content'] = request.form['content']
+    post = posts[post_id]
+    data = request.get_json()
 
-        with open('job_posts.json', 'w')as fileobj:
-            json.dump(blog_posts, fileobj, indent=4)
+    # Update the title if provided
+    if "title" in data:
+        post["title"] = data["title"]
+    # Update the content if provided
+    if "content" in data:
+        post["content"] = data["content"]
 
+    with open('job_posts.json', 'w')as fileobj:
+        json.dump(posts, fileobj, indent=4)
+
+    return jsonify({
+        "id": post["id"],
+        "title": post["title"],
+        "content": post["content"]
+    })
     # Redirect back to index
-    return redirect(url_for('index'))
+   # return redirect(url_for('index'))
     # Else, it's a GET request. So display the update.html page
     #return render_template('update.html', post=post)
 
