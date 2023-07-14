@@ -20,13 +20,23 @@
         "content": "This is the fourth post."
     },
     {
-        "id": 6,
-        "title": "Five",
+        "id": 5,
+        "title": "Five post",
         "content": "Phone"
     },
     {
+        "id": 6,
+        "title": "Six post",
+        "content": "chocolate"
+    },
+    {
         "id": 7,
-        "title": "six",
+        "title": "Seven post",
         "content": "cups"
+    },
+    {
+        "id": 8,
+        "title": "Eight post",
+        "content": "flowers"
     }
 ]

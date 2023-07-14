@@ -8,10 +8,17 @@ CORS(app)  # This will enable CORS for all routes
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    """Returns a list of posts to a template for display."""
+    """Returns a list of posts to a template for display.All posts sorted by their title"""
     with open("posts.json", "r") as file:
         posts = json.load(file)
-    return jsonify(posts)
+    sort_field = request.args.get('sort')
+    sort_direction = request.args.get('direction')
+
+    if sort_field and sort_field in ['title', 'content']:
+        sorted_posts = sorted(posts, key=lambda post: post[sort_field], reverse=(sort_direction == 'desc'))
+        return {"posts": sorted_posts}
+    else:
+        return jsonify(posts)
 
 
 @app.route('/api/posts', methods=['POST'])
@@ -67,7 +74,7 @@ def delete(post_id):
 def update(post_id):
     """
         Fetch the blog posts from the JSON file.
-        Update the form to send a post request.
+        Update an existing blog post.
     """
     try:
         with open("job_posts.json", "r") as fileobj:
@@ -75,28 +82,48 @@ def update(post_id):
     except FileNotFoundError:
         return "File not found", 404
 
-    post = posts[post_id]
     data = request.get_json()
+    for post in posts:
+        if post['id'] == post_id:
+            # Update the title if provided
+            if "title" in data:
+                post["title"] = data["title"]
+            # Update the content if provided
+            if "content" in data:
+                post["content"] = data["content"]
 
-    # Update the title if provided
-    if "title" in data:
-        post["title"] = data["title"]
-    # Update the content if provided
-    if "content" in data:
-        post["content"] = data["content"]
+        with open('job_posts.json', 'w')as fileobj:
+            json.dump(posts, fileobj, indent=4)
 
-    with open('job_posts.json', 'w')as fileobj:
-        json.dump(posts, fileobj, indent=4)
+        return jsonify({
+            "id": post["id"],
+            "title": post["title"],
+            "content": post["content"]
+        })
+    # If post with given id is not found, return error message
+    return jsonify({"error": "Post not found."}), 404
+    #return render_template('update.html')
 
-    return jsonify({
-        "id": post["id"],
-        "title": post["title"],
-        "content": post["content"]
-    })
-    # Redirect back to index
-   # return redirect(url_for('index'))
-    # Else, it's a GET request. So display the update.html page
-    #return render_template('update.html', post=post)
+
+@app.route('/api/posts/search', methods=['GET'])
+def search_posts():
+    """ Returns posts where the title or content contain is given in the search terms."""
+    with open("posts.json", "r") as fileobj:
+        posts = json.load(fileobj)
+
+    search_results = []
+    title = request.args.get('title')
+    content = request.args.get('content')
+
+    if not title and not content:
+        return {'message': 'Please provide at least one search term'}
+
+    for post in posts:
+        if title and title.lower() not in post['title'].lower():
+            search_results.append(post)
+        if content and content.lower() not in post['content'].lower():
+            search_results.append(post)
+    return jsonify(search_results)
 
 
 if __name__ == '__main__':
