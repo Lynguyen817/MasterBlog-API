@@ -44,12 +44,12 @@ def add():
         'title': title,
         'content': content
     }
-    blog_posts.append(new_post)
+    blog_posts.append(new_posta
     # Save data to a newfile
     with open('posts.json', 'w') as newfile:
         json.dump(blog_posts, newfile, indent=4)
-    # Redirect back to homepage
-    return redirect(url_for('index'))
+
+    return jsonify({"message": f"Post with title {title} has been added successfully."})
 
 
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
@@ -70,7 +70,7 @@ def delete(post_id):
     return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 201
 
 
-@app.route('/api/posts/<int:post_id>', methods=['PUT'])
+@app.route('/api/posts/<int:post_id>', methods=['POST'])
 def update(post_id):
     """
         Fetch the blog posts from the JSON file.
@@ -102,7 +102,6 @@ def update(post_id):
         })
     # If post with given id is not found, return error message
     return jsonify({"error": "Post not found."}), 404
-    #return render_template('update.html')
 
 
 @app.route('/api/posts/search', methods=['GET'])
