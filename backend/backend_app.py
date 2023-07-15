@@ -44,7 +44,7 @@ def add():
         'title': title,
         'content': content
     }
-    blog_posts.append(new_posta
+    blog_posts.append(new_post)
     # Save data to a newfile
     with open('posts.json', 'w') as newfile:
         json.dump(blog_posts, newfile, indent=4)
