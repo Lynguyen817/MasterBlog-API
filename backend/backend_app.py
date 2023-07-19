@@ -9,7 +9,7 @@ CORS(app)  # This will enable CORS for all routes
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
     """Returns a list of posts to a template for display.All posts sorted by their title"""
-    with open("posts.json", "r") as file:
+    with open("backend/posts.json", "r") as file:
         posts = json.load(file)
     sort_field = request.args.get('sort')
     sort_direction = request.args.get('direction')
@@ -25,7 +25,7 @@ def get_posts():
 def add():
     """ Add new blog_post to the list if a Post request is sent."""
     try:
-        with open("posts.json", "r") as fileobj:
+        with open("backend/posts.json", "r") as fileobj:
             blog_posts = json.load(fileobj)
     except FileNotFoundError:
         return "File not found", 404
@@ -46,7 +46,7 @@ def add():
     }
     blog_posts.append(new_post)
     # Save data to a newfile
-    with open('posts.json', 'w') as newfile:
+    with open('backend/posts.json', 'w') as newfile:
         json.dump(blog_posts, newfile, indent=4)
 
     return jsonify({"message": f"Post with title {title} has been added successfully."})
@@ -55,7 +55,7 @@ def add():
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete(post_id):
     """ Find the blog post with the given id and remove it from the list"""
-    with open("posts.json", "r") as fileobj:
+    with open("backend/posts.json", "r") as fileobj:
         blog_posts = json.load(fileobj)
     # Delete post by its id
     for post in blog_posts:
@@ -65,7 +65,7 @@ def delete(post_id):
         if not post_id:
             return jsonify({'error': 'Post Not Found'}), 404
     # Save data to a newfile
-    with open('posts.json', 'w') as newfile:
+    with open('backend/posts.json', 'w') as newfile:
         json.dump(blog_posts, newfile, indent=4)
     return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 201
 
@@ -77,7 +77,7 @@ def update(post_id):
         Update an existing blog post.
     """
     try:
-        with open("job_posts.json", "r") as fileobj:
+        with open("backend/job_posts.json", "r") as fileobj:
             posts = json.load(fileobj)
     except FileNotFoundError:
         return "File not found", 404
@@ -92,7 +92,7 @@ def update(post_id):
             if "content" in data:
                 post["content"] = data["content"]
 
-        with open('job_posts.json', 'w')as fileobj:
+        with open('backend/job_posts.json', 'w')as fileobj:
             json.dump(posts, fileobj, indent=4)
 
         return jsonify({
@@ -107,7 +107,7 @@ def update(post_id):
 @app.route('/api/posts/search', methods=['GET'])
 def search_posts():
     """ Returns posts where the title or content contain is given in the search terms."""
-    with open("posts.json", "r") as fileobj:
+    with open("backend/posts.json", "r") as fileobj:
         posts = json.load(fileobj)
 
     search_results = []
