@@ -77,7 +77,7 @@ def update(post_id):
         Update an existing blog post.
     """
     try:
-        with open("backend/job_posts.json", "r") as fileobj:
+        with open("backend/posts.json", "r") as fileobj:
             posts = json.load(fileobj)
     except FileNotFoundError:
         return "File not found", 404
@@ -92,7 +92,7 @@ def update(post_id):
             if "content" in data:
                 post["content"] = data["content"]
 
-        with open('backend/job_posts.json', 'w')as fileobj:
+        with open('backend/posts.json', 'w')as fileobj:
             json.dump(posts, fileobj, indent=4)
 
         return jsonify({
